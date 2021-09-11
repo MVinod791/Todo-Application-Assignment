@@ -69,11 +69,13 @@ const outPutResult = (dbObject) => {
   };
 };
 
+//API 1
 app.get("/todos/", async (request, response) => {
   let data = null;
   let getTodosQuery = "";
   const { search_q = "", priority, category, status } = request.query;
   switch (true) {
+    //Scenario 3
     case hasPriorityAndStatusProperties(request.query):
       if (priority === "HIGH" || priority === "MEDIUM" || priority === "LOW") {
         if (
@@ -94,7 +96,7 @@ app.get("/todos/", async (request, response) => {
         response.send("Invalid Todo Priority");
       }
       break;
-
+    //Scenario 5
     case hasCategoryAndStatus(request.query):
       if (
         category === "WORK" ||
@@ -119,6 +121,7 @@ app.get("/todos/", async (request, response) => {
       }
 
       break;
+    //Scenario 7
     case hasCategoryAndPriority(request.query):
       if (
         category === "WORK" ||
@@ -143,6 +146,7 @@ app.get("/todos/", async (request, response) => {
       }
 
       break;
+    //Scenario 2
     case hasPriorityProperty(request.query):
       if (priority === "HIGH" || priority === "MEDIUM" || priority === "LOW") {
         getTodosQuery = `
@@ -154,7 +158,7 @@ app.get("/todos/", async (request, response) => {
         response.send("Invalid Todo Priority");
       }
       break;
-
+    //Scenario 1
     case hasStatusProperty(request.query):
       if (status === "TO DO" || status === "IN PROGRESS" || status === "DONE") {
         getTodosQuery = `SELECT * FROM todo WHERE status = '${status}';`;
@@ -165,12 +169,13 @@ app.get("/todos/", async (request, response) => {
         response.send("Invalid Todo Status");
       }
       break;
+    //Scenario 4
     case hasSearchProperty(request.query):
       getTodosQuery = `select * from todo where todo like '%${search_q}%';`;
       data = await db.all(getTodosQuery);
       response.send(data.map((eachItem) => outPutResult(eachItem)));
       break;
-
+    //Scenario 6
     case hasCategoryStatus(request.query):
       if (
         category === "WORK" ||
@@ -191,7 +196,7 @@ app.get("/todos/", async (request, response) => {
       response.send(data.map((eachItem) => outPutResult(eachItem)));
   }
 });
-
+//API 2
 app.get("/todos/:todoId/", async (request, response) => {
   const { todoId } = request.params;
   const getTodoIdQuery = `
@@ -203,10 +208,13 @@ app.get("/todos/:todoId/", async (request, response) => {
   response.send(outPutResult(todo));
 });
 
+//API 3
 app.get("/agenda/", async (request, response) => {
   const { date } = request.query;
+
   if (isMatch(date, "yyyy-MM-dd")) {
     const newDate = format(new Date(date), "yyyy-MM-dd");
+
     const requestQuery = `select * from todo where due_date='${newDate}';`;
     const responseResult = await db.all(requestQuery);
     //console.log(responseResult);
@@ -217,9 +225,10 @@ app.get("/agenda/", async (request, response) => {
   }
 });
 
+//API 4
 app.post("/todos/", async (request, response) => {
   const { id, todo, priority, status, category, dueDate } = request.body;
-  if (priority === "HIGH" || priority === "LOW" || priority === "MEDIUm") {
+  if (priority === "HIGH" || priority === "LOW" || priority === "MEDIUM") {
     if (status === "TO DO" || status === "IN PROGRESS" || status === "DONE") {
       if (
         category === "WORK" ||
@@ -227,17 +236,17 @@ app.post("/todos/", async (request, response) => {
         category === "LEARNING"
       ) {
         if (isMatch(dueDate, "yyyy-MM-dd")) {
-          const postNewDueDate = formate(new Date(dueDate), "yyyy-MM-dd");
+          const NewDueDate = formate(new Date(dueDate), "yyyy-MM-dd");
           const postTodoQuery = `
                         INSERT INTO
-                                todo(id,todo,priority,status,category,due_date)
+                                todo(id,todo,category,priority,status,due_date)
                             VALUES(
                                 ${id},
                                 '${todo}',
+                                '${category}',
                                 '${priority}',
                                 '${status}',
-                                '${category}',
-                                '${postNewDueDate}'
+                                '${NewDueDate}'
                             );`;
           await db.run(postTodoQuery);
           response.send("Todo Successfully Added");
@@ -259,6 +268,7 @@ app.post("/todos/", async (request, response) => {
   }
 });
 
+//API 5
 app.put("/todos/:todoId/", async (request, response) => {
   const { todoId } = request.params;
   let updateColumn = "";
@@ -344,7 +354,7 @@ app.put("/todos/:todoId/", async (request, response) => {
             UPDATE todo SET todo='${todo}', priority='${priority}', status='${status}', category='${category}',
             due_date='${newDueDate}' WHERE id = ${todoId};`;
 
-        await database.run(updateTodoQuery);
+        await db.run(updateTodoQuery);
         response.send(`Due Date Updated`);
       } else {
         response.status(400);
@@ -354,6 +364,7 @@ app.put("/todos/:todoId/", async (request, response) => {
   }
 });
 
+//API 6
 app.delete("/todos/:todoId", async (request, response) => {
   const { todoId } = request.params;
   const deleteQuery = `

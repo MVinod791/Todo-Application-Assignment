@@ -3,8 +3,7 @@ GET http://localhost:3000/todos/?category=HOME
 ####
 GET http://localhost:3000/todos/?priority=HIGH&status=IN%20PROGRESS
 ###
-GET http://localhost:3000/agenda/?date=2021-02-22
-
+GET http://localhost:3000/agenda/?date=2021-2-22
 ###
 GET http://localhost:3000/todos/1/
 
@@ -22,11 +21,34 @@ Content-Type: application/json
 }
 
 ###
+PUT http://localhost:3000/todos/6/
+Content-Type: application/json
+
+{
+  "dueDate": "2021-4-12"
+}
+
+###
 PUT http://localhost:3000/todos/5/
 Content-Type: application/json
 
 {
   "status": "DONE"
+}
+###
+PUT http://localhost:3000/todos/5/
+Content-Type: application/json
+
+{
+  "todo": "Clean the garden"
+}
+
+###
+PUT http://localhost:3000/todos/5/
+Content-Type: application/json
+
+{
+  "category": "LEARNING"
 }
 
 ###

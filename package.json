@@ -7,9 +7,12 @@
     "license": "ISC",
     "dependencies": {
         "date-fns": "2.19.0",
+        "dateformat": "^4.5.1",
         "express": "4.17.1",
+        "is-match": "^1.0.0",
         "nodemon": "2.0.7",
         "sqlite": "4.0.19",
-        "sqlite3": "5.0.2"
+        "sqlite3": "5.0.2",
+        "validate-date": "^2.0.0"
     }
 }
